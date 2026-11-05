@@ -16,4 +16,6 @@
     <!-- Подпись кнопки удаления -->
     <string name="delete_recipe">Удалить</string>
     <string name="recipe_deleted">Рецепт удалён</string>
+    <!-- Подсказка в строке поиска -->
+    <string name="search_hint">Поиск рецептов</string>
 </resources>

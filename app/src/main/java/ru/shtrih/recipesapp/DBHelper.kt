@@ -173,6 +173,36 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             arrayOf(recipeId.toString())
         ) > 0
     }
+    // Поиск рецептов по названию текущего пользователя.
+    // LIKE с % ищет совпадения в любой части строки, LOWER делает поиск без учёта регистра.
+    fun searchRecipes(userId: Long, query: String): List<Recipe> {
+        val list = mutableListOf<Recipe>()
+        val sql = """
+        SELECT r.$COL_RECIPE_ID, r.$COL_RECIPE_TITLE, r.$COL_RECIPE_COOK_TIME, c.$COL_CAT_NAME
+        FROM $TABLE_RECIPES r
+        JOIN $TABLE_CATEGORIES c ON c.$COL_CAT_ID = r.$COL_RECIPE_CATEGORY_ID
+        WHERE r.$COL_RECIPE_USER_ID = ?
+          AND LOWER(r.$COL_RECIPE_TITLE) LIKE ?
+        ORDER BY r.$COL_RECIPE_ID DESC
+    """.trimIndent()
+
+        readableDatabase.rawQuery(
+            sql,
+            arrayOf(userId.toString(), "%${query.lowercase()}%")
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                list.add(
+                    Recipe(
+                        id = cursor.getLong(0),
+                        title = cursor.getString(1),
+                        cookTime = cursor.getInt(2),
+                        categoryName = cursor.getString(3)
+                    )
+                )
+            }
+        }
+        return list
+    }
     // Категории для выпадающего списка: пары (id, название).
     fun getCategories(): List<Pair<Long, String>> {
         val list = mutableListOf<Pair<Long, String>>()
