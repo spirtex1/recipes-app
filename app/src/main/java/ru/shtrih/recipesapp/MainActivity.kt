@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadRecipes(emptyText: View) {
         Thread {
-            val recipes = dbHelper.getRecipes()
+            val recipes = dbHelper.getRecipes(Session.getUserId(this))
             runOnUiThread {
                 adapter.updateItems(recipes)
                 // Если рецептов нет, показываем текст-заглушку

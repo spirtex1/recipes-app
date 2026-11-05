@@ -67,7 +67,7 @@ class AddRecipeActivity : AppCompatActivity() {
 
             // Запись в базу — в фоновом потоке
             Thread {
-                dbHelper.addRecipe(title, "", cookTime, categoryId)
+                dbHelper.addRecipe(title, "", cookTime, categoryId, Session.getUserId(this))
                 runOnUiThread {
                     Toast.makeText(this, "Рецепт сохранён", Toast.LENGTH_SHORT).show()
                     finish()

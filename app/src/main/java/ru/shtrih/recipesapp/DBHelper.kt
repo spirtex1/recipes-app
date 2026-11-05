@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 // Модель для вывода списка рецептов на экран.
-// Это не таблица, а просто удобная структура с данными из JOIN-запроса.
 data class Recipe(
     val id: Long,
     val title: String,
@@ -15,29 +14,22 @@ data class Recipe(
 )
 
 // DBHelper отвечает за всю работу с базой SQLite.
-// Наследуемся от SQLiteOpenHelper: он создаёт базу при первом запуске
-// и вызывает onUpgrade при изменении версии.
 class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        // Имя файла базы на телефоне
         const val DATABASE_NAME = "recipes.db"
-        // Версия схемы. Увеличиваем, когда меняем структуру таблиц.
         // Версия 1 была только с Users, версия 2 добавила Categories и Recipes.
         const val DATABASE_VERSION = 2
 
-        // Таблица пользователей
         const val TABLE_USERS = "Users"
         const val COL_USER_ID = "id"
         const val COL_USER_LOGIN = "login"
         const val COL_USER_PASSWORD = "password"
 
-        // Таблица категорий (Завтрак, Обед и т.д.)
         const val TABLE_CATEGORIES = "Categories"
         const val COL_CAT_ID = "id"
         const val COL_CAT_NAME = "name"
 
-        // Таблица рецептов. Связана с Categories и Users через внешние ключи.
         const val TABLE_RECIPES = "Recipes"
         const val COL_RECIPE_ID = "id"
         const val COL_RECIPE_TITLE = "title"
@@ -47,15 +39,12 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         const val COL_RECIPE_USER_ID = "user_id"
     }
 
-    // Вызывается до создания или обновления базы.
     // Включаем проверку внешних ключей: SQLite по умолчанию её не выполняет.
     override fun onConfigure(db: SQLiteDatabase) {
         super.onConfigure(db)
         db.setForeignKeyConstraintsEnabled(true)
     }
 
-    // Вызывается, если базы ещё нет (первый запуск).
-    // Создаём все таблицы и заполняем категории.
     override fun onCreate(db: SQLiteDatabase) {
         createUsers(db)
         createCategories(db)
@@ -63,8 +52,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         insertDefaultCategories(db)
     }
 
-    // Вызывается, если версия базы на телефоне меньше DATABASE_VERSION.
-    // Здесь мы не удаляем Users, а только добавляем новые таблицы.
+    // Не удаляем Users, а только добавляем новые таблицы.
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) {
             createCategories(db)
@@ -73,8 +61,6 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         }
     }
 
-    // CREATE TABLE IF NOT EXISTS: создаёт таблицу, только если её ещё нет.
-    // Это защищает от ошибки при повторном вызове.
     private fun createUsers(db: SQLiteDatabase) {
         db.execSQL(
             """
@@ -87,8 +73,6 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         )
     }
 
-    // Категории: id и уникальное название.
-    // UNIQUE не даст добавить одну и ту же категорию дважды.
     private fun createCategories(db: SQLiteDatabase) {
         db.execSQL(
             """
@@ -100,8 +84,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         )
     }
 
-    // Рецепты. FOREIGN KEY означает, что category_id должен существовать в Categories,
-    // а user_id — в Users. Это и есть целостность связей из методички.
+    // FOREIGN KEY: category_id должен быть в Categories, user_id — в Users.
     private fun createRecipes(db: SQLiteDatabase) {
         db.execSQL(
             """
@@ -119,8 +102,6 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         )
     }
 
-    // Добавляем стартовые категории.
-    // CONFLICT_IGNORE: если категория уже есть, запись пропускается без ошибки.
     private fun insertDefaultCategories(db: SQLiteDatabase) {
         listOf("Завтрак", "Обед", "Ужин", "Десерт").forEach { name ->
             val values = ContentValues().apply { put(COL_CAT_NAME, name) }
@@ -128,50 +109,49 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         }
     }
 
-    // Регистрация: добавляем строку в Users.
-    // Возвращает false, если логин уже занят (сработал UNIQUE).
-    fun registerUser(login: String, password: String): Boolean {
+    // Регистрация. Возвращаем id новой строки или -1, если логин занят.
+    fun registerUser(login: String, password: String): Long {
         val values = ContentValues().apply {
             put(COL_USER_LOGIN, login)
             put(COL_USER_PASSWORD, password)
         }
-        return writableDatabase.insert(TABLE_USERS, null, values) != -1L
+        return writableDatabase.insert(TABLE_USERS, null, values)
     }
 
-    // Проверка входа: ищем строку с таким логином и паролем.
-    // Знаки ? защищают от SQL-инъекций: значения передаются отдельно.
-    fun checkUser(login: String, password: String): Boolean {
+    // Вход. Возвращаем id пользователя или -1, если логин/пароль не подошли.
+    fun getUserId(login: String, password: String): Long {
         readableDatabase.rawQuery(
             "SELECT $COL_USER_ID FROM $TABLE_USERS WHERE $COL_USER_LOGIN = ? AND $COL_USER_PASSWORD = ?",
             arrayOf(login, password)
         ).use { cursor ->
-            return cursor.moveToFirst()
+            return if (cursor.moveToFirst()) cursor.getLong(0) else -1L
         }
     }
 
-    // Добавляем рецепт. user_id пока не заполняем, его привяжем позже, при сохранении сессии.
-    fun addRecipe(title: String, description: String, cookTime: Int, categoryId: Long): Long {
+    // Добавляем рецепт и привязываем его к пользователю через user_id.
+    fun addRecipe(title: String, description: String, cookTime: Int, categoryId: Long, userId: Long): Long {
         val values = ContentValues().apply {
             put(COL_RECIPE_TITLE, title)
             put(COL_RECIPE_DESCRIPTION, description)
             put(COL_RECIPE_COOK_TIME, cookTime)
             put(COL_RECIPE_CATEGORY_ID, categoryId)
+            put(COL_RECIPE_USER_ID, userId)
         }
         return writableDatabase.insert(TABLE_RECIPES, null, values)
     }
 
-    // Список рецептов с названием категории.
-    // JOIN соединяет Recipes и Categories по category_id, поэтому в списке видно не id, а название.
-    fun getRecipes(): List<Recipe> {
+    // Список рецептов только текущего пользователя.
+    fun getRecipes(userId: Long): List<Recipe> {
         val list = mutableListOf<Recipe>()
         val sql = """
             SELECT r.$COL_RECIPE_ID, r.$COL_RECIPE_TITLE, r.$COL_RECIPE_COOK_TIME, c.$COL_CAT_NAME
             FROM $TABLE_RECIPES r
             JOIN $TABLE_CATEGORIES c ON c.$COL_CAT_ID = r.$COL_RECIPE_CATEGORY_ID
+            WHERE r.$COL_RECIPE_USER_ID = ?
             ORDER BY r.$COL_RECIPE_ID DESC
         """.trimIndent()
 
-        readableDatabase.rawQuery(sql, null).use { cursor ->
+        readableDatabase.rawQuery(sql, arrayOf(userId.toString())).use { cursor ->
             while (cursor.moveToNext()) {
                 list.add(
                     Recipe(
@@ -186,8 +166,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         return list
     }
 
-    // Категории для выпадающего списка при добавлении рецепта.
-    // Возвращаем пары (id, название), чтобы потом передать id в addRecipe.
+    // Категории для выпадающего списка: пары (id, название).
     fun getCategories(): List<Pair<Long, String>> {
         val list = mutableListOf<Pair<Long, String>>()
         readableDatabase.rawQuery(

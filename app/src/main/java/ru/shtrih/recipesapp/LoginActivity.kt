@@ -13,8 +13,14 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
 
+        // Если уже вошли раньше, сессия есть, экран входа не нужен
+        if (Session.getUserId(this) != -1L) {
+            openMain()
+            return
+        }
+
+        setContentView(R.layout.activity_login)
         dbHelper = DBHelper(this)
 
         val loginInput = findViewById<EditText>(R.id.loginInput)
@@ -23,15 +29,16 @@ class LoginActivity : AppCompatActivity() {
         val registerButton = findViewById<Button>(R.id.registerButton)
 
         loginButton.setOnClickListener {
+            if (!validate(loginInput, passwordInput)) return@setOnClickListener
             val login = loginInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            if (!validate(loginInput, passwordInput)) return@setOnClickListener
-
+            // Запрос в базу — в фоне, результат — в главном потоке
             Thread {
-                val ok = dbHelper.checkUser(login, password)
+                val userId = dbHelper.getUserId(login, password)
                 runOnUiThread {
-                    if (ok) {
+                    if (userId != -1L) {
+                        Session.saveUser(this, userId)
                         openMain()
                     } else {
                         Toast.makeText(this, "Неверный логин или пароль", Toast.LENGTH_SHORT).show()
@@ -41,15 +48,15 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
+            if (!validate(loginInput, passwordInput)) return@setOnClickListener
             val login = loginInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            if (!validate(loginInput, passwordInput)) return@setOnClickListener
-
             Thread {
-                val ok = dbHelper.registerUser(login, password)
+                val userId = dbHelper.registerUser(login, password)
                 runOnUiThread {
-                    if (ok) {
+                    if (userId != -1L) {
+                        Session.saveUser(this, userId)
                         Toast.makeText(this, "Регистрация успешна", Toast.LENGTH_SHORT).show()
                         openMain()
                     } else {
@@ -60,15 +67,13 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Проверка пустых полей: setError, как в TC-02
     private fun validate(loginInput: EditText, passwordInput: EditText): Boolean {
-        val login = loginInput.text.toString().trim()
-        val password = passwordInput.text.toString().trim()
-
-        if (login.isEmpty()) {
+        if (loginInput.text.toString().trim().isEmpty()) {
             loginInput.error = "Введите логин"
             return false
         }
-        if (password.isEmpty()) {
+        if (passwordInput.text.toString().trim().isEmpty()) {
             passwordInput.error = "Введите пароль"
             return false
         }
