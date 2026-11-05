@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RecipesApp">
-
+        <activity
+            android:name=".AddRecipeActivity"
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">

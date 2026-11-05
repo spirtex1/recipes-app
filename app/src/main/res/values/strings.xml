@@ -5,4 +5,12 @@
     <string name="password_hint">Пароль</string>
     <string name="login_button">Войти</string>
     <string name="register_button">Регистрация</string>
+    <!-- Подпись кнопки добавления рецепта -->
+    <string name="add_recipe">Добавить рецепт</string>
+    <!-- Текст, когда список пустой -->
+    <string name="empty_list">Рецептов пока нет</string>
+    <!-- Подсказки в полях формы -->
+    <string name="recipe_title_hint">Название рецепта</string>
+    <string name="cook_time_hint">Время готовки, мин</string>
+    <string name="save_recipe">Сохранить</string>
 </resources>
