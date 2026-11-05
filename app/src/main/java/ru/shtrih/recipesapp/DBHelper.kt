@@ -165,7 +165,14 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         }
         return list
     }
-
+    // Удаляем рецепт по id. Возвращаем true, если строка действительно удалилась.
+    fun deleteRecipe(recipeId: Long): Boolean {
+        return writableDatabase.delete(
+            TABLE_RECIPES,
+            "$COL_RECIPE_ID = ?",
+            arrayOf(recipeId.toString())
+        ) > 0
+    }
     // Категории для выпадающего списка: пары (id, название).
     fun getCategories(): List<Pair<Long, String>> {
         val list = mutableListOf<Pair<Long, String>>()

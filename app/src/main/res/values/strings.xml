@@ -13,4 +13,7 @@
     <string name="recipe_title_hint">Название рецепта</string>
     <string name="cook_time_hint">Время готовки, мин</string>
     <string name="save_recipe">Сохранить</string>
+    <!-- Подпись кнопки удаления -->
+    <string name="delete_recipe">Удалить</string>
+    <string name="recipe_deleted">Рецепт удалён</string>
 </resources>
