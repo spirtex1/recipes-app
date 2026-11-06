@@ -1,5 +1,6 @@
 package ru.shtrih.recipesapp
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -134,28 +135,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Меню профиля. Пункт админки показываем только тем, у кого роль admin.
+// Меню профиля: тема, админка (только для админа) и выход
     private fun showProfileMenu() {
         Thread {
             val isAdmin = dbHelper.getUserRole(Session.getUserId(this)) == "admin"
             runOnUiThread {
-                val options = if (isAdmin) {
-                    arrayOf(getString(R.string.admin_panel), getString(R.string.logout))
-                } else {
-                    arrayOf(getString(R.string.logout))
-                }
+                val options = mutableListOf(getString(R.string.theme_toggle))
+                if (isAdmin) options.add(getString(R.string.admin_panel))
+                options.add(getString(R.string.logout))
+
                 AlertDialog.Builder(this)
                     .setTitle(getString(R.string.nav_profile))
-                    .setItems(options) { _, which ->
-                        if (options[which] == getString(R.string.logout)) {
-                            logout()
-                        } else {
-                            startActivity(Intent(this, AdminActivity::class.java))
+                    .setItems(options.toTypedArray()) { _, which ->
+                        when (options[which]) {
+                            getString(R.string.theme_toggle) -> toggleTheme()
+                            getString(R.string.admin_panel) -> startActivity(Intent(this, AdminActivity::class.java))
+                            getString(R.string.logout) -> logout()
                         }
                     }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
             }
         }.start()
+    }
+
+    // Переключаем тему и сохраняем выбор. Экран пересоздастся сам.
+    private fun toggleTheme() {
+        val nowDark = !Session.isDarkTheme(this)
+        Session.setDarkTheme(this, nowDark)
+        AppCompatDelegate.setDefaultNightMode(
+            if (nowDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 
     // Выход: стираем сессию и возвращаемся на экран входа, очистив стек экранов

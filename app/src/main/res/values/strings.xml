@@ -31,4 +31,6 @@
     <string name="admin_stats">Пользователей: %1$d, рецептов: %2$d</string>
     <!-- Сообщение, если обычный пользователь попал в админку -->
     <string name="admin_not_allowed">Нет доступа</string>
+    <!-- Переключатель темы в меню профиля -->
+    <string name="theme_toggle">Сменить тему</string>
 </resources>

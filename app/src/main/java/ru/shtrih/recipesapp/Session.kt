@@ -5,6 +5,18 @@ import android.content.Context
 // Сессия: запоминаем id пользователя в SharedPreferences.
 // Эти данные живут в телефоне и переживают закрытие приложения.
 object Session {
+    // Сохраняем выбор темы: true — тёмная, false — светлая
+    fun setDarkTheme(context: Context, dark: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("dark_theme", dark)
+            .apply()
+    }
+
+    fun isDarkTheme(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean("dark_theme", false)
+    }
 
     private const val PREFS_NAME = "session"
     private const val KEY_USER_ID = "user_id"
