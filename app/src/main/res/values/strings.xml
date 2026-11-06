@@ -33,4 +33,8 @@
     <string name="admin_not_allowed">Нет доступа</string>
     <!-- Переключатель темы в меню профиля -->
     <string name="theme_toggle">Сменить тему</string>
+    <!-- Фильтр по категории на главном экране -->
+    <string name="filter_all">Все категории</string>
+    <string name="edit_recipe">Изменить</string>
+    <string name="recipe_updated">Рецепт обновлён</string>
 </resources>

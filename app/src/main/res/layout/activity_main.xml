@@ -5,7 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <!-- Поиск по рецептам сверху экрана -->
     <SearchView
         android:id="@+id/searchView"
@@ -16,7 +15,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Список рецептов -->
+    <!-- Поиск по рецептам сверху экрана -->
+    <!-- Фильтр по категории под поиском -->
+    <Spinner
+        android:id="@+id/categoryFilter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        android:minHeight="48dp" />
+
+    <!-- Список рецептов теперь под фильтром -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recipesList"
         android:layout_width="0dp"
@@ -24,7 +34,7 @@
         app:layout_constraintBottom_toTopOf="@+id/addRecipeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+        app:layout_constraintTop_toBottomOf="@+id/categoryFilter" />
 
     <!-- Текст-заглушка, когда рецептов нет -->
     <TextView

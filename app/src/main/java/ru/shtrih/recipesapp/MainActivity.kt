@@ -1,24 +1,33 @@
 package ru.shtrih.recipesapp
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.SearchView
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 
-// Главный экран. Список рецептов, поиск, удаление, детали и нижняя навигация.
+// Главный экран. Список рецептов, поиск, фильтр по категории, удаление, детали и нижняя навигация.
 class MainActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
     private lateinit var adapter: RecipeAdapter
+
+    // Категории для фильтра. Первый пункт «Все категории» — id -1, значит без фильтра.
+    private var filterCategories: List<Pair<Long, String>> = emptyList()
+    private var selectedCategoryId: Long = -1L
+    // Текст поиска держим отдельно, чтобы фильтр и поиск работали вместе
+    private var currentQuery: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         val addButton = findViewById<Button>(R.id.addRecipeButton)
         val searchView = findViewById<SearchView>(R.id.searchView)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        val categoryFilter = findViewById<Spinner>(R.id.categoryFilter)
 
         // Список сверху вниз. Два колбэка: удаление и открытие деталей.
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -44,15 +54,41 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, AddRecipeActivity::class.java))
         }
 
-        // Ищем по мере ввода текста
+        // Поиск по мере ввода. Запоминаем текст, чтобы фильтр его учитывал.
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchFor(newText.orEmpty())
+                currentQuery = newText.orEmpty().trim()
+                reloadList()
                 return true
             }
         })
+
+        // Загружаем категории в фильтр в фоне
+        Thread {
+            val cats = dbHelper.getCategories()
+            runOnUiThread {
+                filterCategories = listOf(-1L to getString(R.string.filter_all)) + cats
+                val filterAdapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    filterCategories.map { it.second }
+                )
+                filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                categoryFilter.adapter = filterAdapter
+            }
+        }.start()
+
+        // Выбор категории в фильтре сразу обновляет список
+        categoryFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedCategoryId = filterCategories.getOrNull(position)?.first ?: -1L
+                reloadList()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         // Нижняя навигация: «Рецепты» остаётся на экране, «Профиль» открывает меню
         bottomNav.selectedItemId = R.id.nav_recipes
@@ -67,33 +103,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        loadRecipes()
+        reloadList()
     }
 
     override fun onResume() {
         super.onResume()
         // Обновляем список при возврате на экран, например после добавления рецепта
-        loadRecipes()
+        reloadList()
     }
 
-    // Загрузка всех рецептов пользователя в фоне
-    private fun loadRecipes() {
+    // Единая точка загрузки: учитывает и поиск, и фильтр по категории.
+    // Если выбран фильтр, берём рецепты категории, иначе все, а поиск применяем поверх.
+    private fun reloadList() {
         Thread {
-            val recipes = dbHelper.getRecipes(Session.getUserId(this))
-            runOnUiThread {
-                adapter.updateItems(recipes)
-                showEmptyText(recipes.isEmpty())
-            }
-        }.start()
-    }
-
-    // Пустой запрос показывает все рецепты, иначе — результаты поиска
-    private fun searchFor(query: String) {
-        Thread {
-            val recipes = if (query.isBlank()) {
-                dbHelper.getRecipes(Session.getUserId(this))
-            } else {
-                dbHelper.searchRecipes(Session.getUserId(this), query.trim())
+            val userId = Session.getUserId(this)
+            val recipes = when {
+                selectedCategoryId != -1L -> dbHelper.getRecipesByCategory(userId, selectedCategoryId)
+                    .filter { currentQuery.isEmpty() || it.title.lowercase().contains(currentQuery.lowercase()) }
+                currentQuery.isNotEmpty() -> dbHelper.searchRecipes(userId, currentQuery)
+                else -> dbHelper.getRecipes(userId)
             }
             runOnUiThread {
                 adapter.updateItems(recipes)
@@ -113,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         Thread {
             dbHelper.deleteRecipe(recipe.id)
             runOnUiThread {
-                loadRecipes()
+                reloadList()
                 Snackbar.make(
                     findViewById(R.id.recipesList),
                     getString(R.string.recipe_deleted),
@@ -134,8 +162,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // Меню профиля. Пункт админки показываем только тем, у кого роль admin.
-// Меню профиля: тема, админка (только для админа) и выход
+    // Меню профиля: тема, админка (только для админа) и выход
     private fun showProfileMenu() {
         Thread {
             val isAdmin = dbHelper.getUserRole(Session.getUserId(this)) == "admin"

@@ -218,6 +218,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             arrayOf(userId.toString(), "%${query.lowercase()}%")
         )
     }
+    // Рецепты пользователя только одной категории
+    fun getRecipesByCategory(userId: Long, categoryId: Long): List<Recipe> {
+        return queryRecipes(
+            "WHERE r.$COL_RECIPE_USER_ID = ? AND r.$COL_RECIPE_CATEGORY_ID = ?",
+            arrayOf(userId.toString(), categoryId.toString())
+        )
+    }
 
     // Общая функция для выборки рецептов: одно место для SELECT и маппинга в Recipe.
     private fun queryRecipes(whereClause: String, args: Array<String>): List<Recipe> {
