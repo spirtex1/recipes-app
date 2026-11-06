@@ -165,11 +165,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Меню профиля: тема, админка (только для админа) и выход
+// Меню профиля: тема, статистика, админка (только для админа) и выход
     private fun showProfileMenu() {
         Thread {
             val isAdmin = dbHelper.getUserRole(Session.getUserId(this)) == "admin"
             runOnUiThread {
-                val options = mutableListOf(getString(R.string.theme_toggle))
+                val options = mutableListOf(
+                    getString(R.string.theme_toggle),
+                    getString(R.string.stats_title)
+                )
                 if (isAdmin) options.add(getString(R.string.admin_panel))
                 options.add(getString(R.string.logout))
 
@@ -178,6 +182,7 @@ class MainActivity : AppCompatActivity() {
                     .setItems(options.toTypedArray()) { _, which ->
                         when (options[which]) {
                             getString(R.string.theme_toggle) -> toggleTheme()
+                            getString(R.string.stats_title) -> startActivity(Intent(this, StatsActivity::class.java))
                             getString(R.string.admin_panel) -> startActivity(Intent(this, AdminActivity::class.java))
                             getString(R.string.logout) -> logout()
                         }

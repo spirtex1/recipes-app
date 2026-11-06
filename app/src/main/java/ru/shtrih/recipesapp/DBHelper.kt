@@ -277,6 +277,27 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             arrayOf(recipeId.toString())
         ) > 0
     }
+    // Количество рецептов пользователя по каждой категории.
+// LEFT JOIN оставляет категории, в которых рецептов нет, со значением 0.
+    fun getCategoryStats(userId: Long): List<Pair<String, Int>> {
+        val list = mutableListOf<Pair<String, Int>>()
+        val sql = """
+        SELECT c.$COL_CAT_NAME, COUNT(r.$COL_RECIPE_ID)
+        FROM $TABLE_CATEGORIES c
+        LEFT JOIN $TABLE_RECIPES r
+            ON r.$COL_RECIPE_CATEGORY_ID = c.$COL_CAT_ID
+            AND r.$COL_RECIPE_USER_ID = ?
+        GROUP BY c.$COL_CAT_ID, c.$COL_CAT_NAME
+        ORDER BY c.$COL_CAT_ID
+    """.trimIndent()
+
+        readableDatabase.rawQuery(sql, arrayOf(userId.toString())).use { cursor ->
+            while (cursor.moveToNext()) {
+                list.add(cursor.getString(0) to cursor.getInt(1))
+            }
+        }
+        return list
+    }
 
     // Категории для выпадающего списка: пары (id, название).
     fun getCategories(): List<Pair<Long, String>> {
