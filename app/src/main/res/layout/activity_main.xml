@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Главный экран: поиск сверху, список рецептов, кнопка добавления внизу -->
+<!-- Главный экран: поиск сверху, список рецептов, кнопка добавления и нижняя навигация -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Список рецептов. Под поиском, над кнопкой добавления -->
+    <!-- Список рецептов -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recipesList"
         android:layout_width="0dp"
@@ -38,15 +38,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/recipesList" />
 
-    <!-- Кнопка добавления рецепта внизу экрана -->
+    <!-- Кнопка добавления рецепта над нижней навигацией -->
     <Button
         android:id="@+id/addRecipeButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/add_recipe"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Нижняя навигация: Рецепты и Профиль -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

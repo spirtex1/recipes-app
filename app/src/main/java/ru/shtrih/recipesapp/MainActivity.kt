@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 
-// Главный экран. Показывает список рецептов из базы, умеет искать, удалять и открывать детали.
+// Главный экран. Список рецептов, поиск, удаление, детали и нижняя навигация.
 class MainActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recipesList)
         val addButton = findViewById<Button>(R.id.addRecipeButton)
         val searchView = findViewById<SearchView>(R.id.searchView)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
         // Список сверху вниз. Два колбэка: удаление и открытие деталей.
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -48,6 +51,19 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        // Нижняя навигация: «Рецепты» остаётся на экране, «Профиль» выполняет выход
+        bottomNav.selectedItemId = R.id.nav_recipes
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_recipes -> true
+                R.id.nav_profile -> {
+                    logout()
+                    true
+                }
+                else -> false
+            }
+        }
 
         loadRecipes()
     }
@@ -114,5 +130,16 @@ class MainActivity : AppCompatActivity() {
             putExtra(RecipeDetailActivity.EXTRA_DESCRIPTION, recipe.description)
         }
         startActivity(intent)
+    }
+
+    // Выход: стираем сессию и возвращаемся на экран входа, очистив стек экранов
+    private fun logout() {
+        Session.logout(this)
+        Toast.makeText(this, getString(R.string.logout_done), Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+        finish()
     }
 }

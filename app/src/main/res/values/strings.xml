@@ -21,4 +21,8 @@
     <string name="description_hint">Ингредиенты и шаги приготовления</string>
     <!-- Кнопка возврата на экране деталей -->
     <string name="back">Назад</string>
+    <!-- Подписи вкладок внизу экрана -->
+    <string name="nav_recipes">Рецепты</string>
+    <string name="nav_profile">Профиль</string>
+    <string name="logout_done">Вы вышли из аккаунта</string>
 </resources>
