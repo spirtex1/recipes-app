@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,13 +53,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Нижняя навигация: «Рецепты» остаётся на экране, «Профиль» выполняет выход
+        // Нижняя навигация: «Рецепты» остаётся на экране, «Профиль» открывает меню
         bottomNav.selectedItemId = R.id.nav_recipes
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_recipes -> true
                 R.id.nav_profile -> {
-                    logout()
+                    showProfileMenu()
                     true
                 }
                 else -> false
@@ -130,6 +131,31 @@ class MainActivity : AppCompatActivity() {
             putExtra(RecipeDetailActivity.EXTRA_DESCRIPTION, recipe.description)
         }
         startActivity(intent)
+    }
+
+    // Меню профиля. Пункт админки показываем только тем, у кого роль admin.
+    private fun showProfileMenu() {
+        Thread {
+            val isAdmin = dbHelper.getUserRole(Session.getUserId(this)) == "admin"
+            runOnUiThread {
+                val options = if (isAdmin) {
+                    arrayOf(getString(R.string.admin_panel), getString(R.string.logout))
+                } else {
+                    arrayOf(getString(R.string.logout))
+                }
+                AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.nav_profile))
+                    .setItems(options) { _, which ->
+                        if (options[which] == getString(R.string.logout)) {
+                            logout()
+                        } else {
+                            startActivity(Intent(this, AdminActivity::class.java))
+                        }
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+        }.start()
     }
 
     // Выход: стираем сессию и возвращаемся на экран входа, очистив стек экранов

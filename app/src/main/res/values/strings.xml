@@ -25,4 +25,10 @@
     <string name="nav_recipes">Рецепты</string>
     <string name="nav_profile">Профиль</string>
     <string name="logout_done">Вы вышли из аккаунта</string>
+    <!-- Панель администратора -->
+    <string name="admin_panel">Панель администратора</string>
+    <string name="logout">Выйти</string>
+    <string name="admin_stats">Пользователей: %1$d, рецептов: %2$d</string>
+    <!-- Сообщение, если обычный пользователь попал в админку -->
+    <string name="admin_not_allowed">Нет доступа</string>
 </resources>
