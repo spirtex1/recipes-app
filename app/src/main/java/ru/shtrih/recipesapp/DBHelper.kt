@@ -262,6 +262,21 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             arrayOf(recipeId.toString())
         ) > 0
     }
+    // Обновляем существующий рецепт. Возвращаем true, если строка обновилась.
+    fun updateRecipe(recipeId: Long, title: String, description: String, cookTime: Int, categoryId: Long): Boolean {
+        val values = ContentValues().apply {
+            put(COL_RECIPE_TITLE, title)
+            put(COL_RECIPE_DESCRIPTION, description)
+            put(COL_RECIPE_COOK_TIME, cookTime)
+            put(COL_RECIPE_CATEGORY_ID, categoryId)
+        }
+        return writableDatabase.update(
+            TABLE_RECIPES,
+            values,
+            "$COL_RECIPE_ID = ?",
+            arrayOf(recipeId.toString())
+        ) > 0
+    }
 
     // Категории для выпадающего списка: пары (id, название).
     fun getCategories(): List<Pair<Long, String>> {
