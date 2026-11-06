@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Форма добавления рецепта: название, время, категория и кнопка сохранения -->
+<!-- Форма добавления рецепта: название, время, описание, категория и кнопка сохранения -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -30,6 +30,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recipeTitleInput" />
 
+    <!-- Описание: ингредиенты и шаги текстом -->
+    <EditText
+        android:id="@+id/descriptionInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:minHeight="100dp"
+        android:gravity="top"
+        android:hint="@string/description_hint"
+        android:inputType="textMultiLine"
+        android:autofillHints="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cookTimeInput" />
+
     <!-- Выпадающий список категорий -->
     <Spinner
         android:id="@+id/categorySpinner"
@@ -38,7 +53,7 @@
         android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cookTimeInput" />
+        app:layout_constraintTop_toBottomOf="@+id/descriptionInput" />
 
     <!-- Кнопка сохранения рецепта -->
     <Button

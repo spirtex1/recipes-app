@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 class AddRecipeActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
-    // Список категорий в том же порядке, что и в Spinner: (id, название)
+    // Категории в том же порядке, что и в Spinner: (id, название)
     private var categories: List<Pair<Long, String>> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +23,7 @@ class AddRecipeActivity : AppCompatActivity() {
 
         val titleInput = findViewById<EditText>(R.id.recipeTitleInput)
         val timeInput = findViewById<EditText>(R.id.cookTimeInput)
+        val descriptionInput = findViewById<EditText>(R.id.descriptionInput)
         val spinner = findViewById<Spinner>(R.id.categorySpinner)
         val saveButton = findViewById<Button>(R.id.saveRecipeButton)
 
@@ -43,6 +44,7 @@ class AddRecipeActivity : AppCompatActivity() {
         saveButton.setOnClickListener {
             val title = titleInput.text.toString().trim()
             val timeText = timeInput.text.toString().trim()
+            val description = descriptionInput.text.toString().trim()
 
             // Валидация: пустые поля не должны падать или сохраняться
             if (title.isEmpty()) {
@@ -65,9 +67,9 @@ class AddRecipeActivity : AppCompatActivity() {
 
             val categoryId = categories[spinner.selectedItemPosition].first
 
-            // Запись в базу — в фоновом потоке
+            // Запись в базу в фоне, описание сохраняем вместе с рецептом
             Thread {
-                dbHelper.addRecipe(title, "", cookTime, categoryId, Session.getUserId(this))
+                dbHelper.addRecipe(title, description, cookTime, categoryId, Session.getUserId(this))
                 runOnUiThread {
                     Toast.makeText(this, "Рецепт сохранён", Toast.LENGTH_SHORT).show()
                     finish()

@@ -7,11 +7,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-// onDelete — функция, которую адаптер вызовет при нажатии «Удалить».
-// Сам адаптер не лезет в базу, он только передаёт событие наверх.
+// Адаптер получает два колбэка: onDelete для удаления и onOpen для открытия деталей.
+// Сам адаптер не ходит в базу и не открывает экраны, он только передаёт событие наверх.
 class RecipeAdapter(
     private var items: List<Recipe>,
-    private val onDelete: (Recipe) -> Unit
+    private val onDelete: (Recipe) -> Unit,
+    private val onOpen: (Recipe) -> Unit
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,6 +34,8 @@ class RecipeAdapter(
         holder.category.text = recipe.categoryName
         holder.time.text = "${recipe.cookTime} мин"
         holder.deleteButton.setOnClickListener { onDelete(recipe) }
+        // Тап по всей карточке открывает детали. Кнопка «Удалить» обрабатывает свой клик сама.
+        holder.itemView.setOnClickListener { onOpen(recipe) }
     }
 
     override fun getItemCount(): Int = items.size

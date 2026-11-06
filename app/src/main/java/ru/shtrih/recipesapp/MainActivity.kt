@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 
-// Главный экран. Показывает список рецептов из базы, умеет искать и удалять.
+// Главный экран. Показывает список рецептов из базы, умеет искать, удалять и открывать детали.
 class MainActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
@@ -26,9 +26,13 @@ class MainActivity : AppCompatActivity() {
         val addButton = findViewById<Button>(R.id.addRecipeButton)
         val searchView = findViewById<SearchView>(R.id.searchView)
 
-        // Список сверху вниз. Колбэк вызывается при нажатии «Удалить» в карточке.
+        // Список сверху вниз. Два колбэка: удаление и открытие деталей.
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = RecipeAdapter(emptyList()) { recipe -> deleteRecipe(recipe) }
+        adapter = RecipeAdapter(
+            emptyList(),
+            onDelete = { recipe -> deleteRecipe(recipe) },
+            onOpen = { recipe -> openDetail(recipe) }
+        )
         recyclerView.adapter = adapter
 
         addButton.setOnClickListener {
@@ -99,5 +103,16 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }.start()
+    }
+
+    // Открываем экран деталей и передаём данные рецепта через Intent
+    private fun openDetail(recipe: Recipe) {
+        val intent = Intent(this, RecipeDetailActivity::class.java).apply {
+            putExtra(RecipeDetailActivity.EXTRA_TITLE, recipe.title)
+            putExtra(RecipeDetailActivity.EXTRA_CATEGORY, recipe.categoryName)
+            putExtra(RecipeDetailActivity.EXTRA_TIME, recipe.cookTime)
+            putExtra(RecipeDetailActivity.EXTRA_DESCRIPTION, recipe.description)
+        }
+        startActivity(intent)
     }
 }

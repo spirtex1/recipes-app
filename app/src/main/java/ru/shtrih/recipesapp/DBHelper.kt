@@ -10,7 +10,8 @@ data class Recipe(
     val id: Long,
     val title: String,
     val cookTime: Int,
-    val categoryName: String
+    val categoryName: String,
+    val description: String
 )
 
 // DBHelper отвечает за всю работу с базой SQLite.
@@ -142,29 +143,49 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
 
     // Список рецептов только текущего пользователя.
     fun getRecipes(userId: Long): List<Recipe> {
+        return queryRecipes(
+            "WHERE r.$COL_RECIPE_USER_ID = ?",
+            arrayOf(userId.toString())
+        )
+    }
+
+    // Поиск рецептов по названию текущего пользователя.
+    // LIKE с % ищет совпадения в любой части строки, LOWER делает поиск без учёта регистра.
+    fun searchRecipes(userId: Long, query: String): List<Recipe> {
+        return queryRecipes(
+            "WHERE r.$COL_RECIPE_USER_ID = ? AND LOWER(r.$COL_RECIPE_TITLE) LIKE ?",
+            arrayOf(userId.toString(), "%${query.lowercase()}%")
+        )
+    }
+
+    // Общая функция для выборки рецептов: одно место для SELECT и маппинга в Recipe.
+    private fun queryRecipes(whereClause: String, args: Array<String>): List<Recipe> {
         val list = mutableListOf<Recipe>()
         val sql = """
-            SELECT r.$COL_RECIPE_ID, r.$COL_RECIPE_TITLE, r.$COL_RECIPE_COOK_TIME, c.$COL_CAT_NAME
+            SELECT r.$COL_RECIPE_ID, r.$COL_RECIPE_TITLE, r.$COL_RECIPE_COOK_TIME,
+                   c.$COL_CAT_NAME, r.$COL_RECIPE_DESCRIPTION
             FROM $TABLE_RECIPES r
             JOIN $TABLE_CATEGORIES c ON c.$COL_CAT_ID = r.$COL_RECIPE_CATEGORY_ID
-            WHERE r.$COL_RECIPE_USER_ID = ?
+            $whereClause
             ORDER BY r.$COL_RECIPE_ID DESC
         """.trimIndent()
 
-        readableDatabase.rawQuery(sql, arrayOf(userId.toString())).use { cursor ->
+        readableDatabase.rawQuery(sql, args).use { cursor ->
             while (cursor.moveToNext()) {
                 list.add(
                     Recipe(
                         id = cursor.getLong(0),
                         title = cursor.getString(1),
                         cookTime = cursor.getInt(2),
-                        categoryName = cursor.getString(3)
+                        categoryName = cursor.getString(3),
+                        description = cursor.getString(4) ?: ""
                     )
                 )
             }
         }
         return list
     }
+
     // Удаляем рецепт по id. Возвращаем true, если строка действительно удалилась.
     fun deleteRecipe(recipeId: Long): Boolean {
         return writableDatabase.delete(
@@ -173,36 +194,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             arrayOf(recipeId.toString())
         ) > 0
     }
-    // Поиск рецептов по названию текущего пользователя.
-    // LIKE с % ищет совпадения в любой части строки, LOWER делает поиск без учёта регистра.
-    fun searchRecipes(userId: Long, query: String): List<Recipe> {
-        val list = mutableListOf<Recipe>()
-        val sql = """
-        SELECT r.$COL_RECIPE_ID, r.$COL_RECIPE_TITLE, r.$COL_RECIPE_COOK_TIME, c.$COL_CAT_NAME
-        FROM $TABLE_RECIPES r
-        JOIN $TABLE_CATEGORIES c ON c.$COL_CAT_ID = r.$COL_RECIPE_CATEGORY_ID
-        WHERE r.$COL_RECIPE_USER_ID = ?
-          AND LOWER(r.$COL_RECIPE_TITLE) LIKE ?
-        ORDER BY r.$COL_RECIPE_ID DESC
-    """.trimIndent()
 
-        readableDatabase.rawQuery(
-            sql,
-            arrayOf(userId.toString(), "%${query.lowercase()}%")
-        ).use { cursor ->
-            while (cursor.moveToNext()) {
-                list.add(
-                    Recipe(
-                        id = cursor.getLong(0),
-                        title = cursor.getString(1),
-                        cookTime = cursor.getInt(2),
-                        categoryName = cursor.getString(3)
-                    )
-                )
-            }
-        }
-        return list
-    }
     // Категории для выпадающего списка: пары (id, название).
     fun getCategories(): List<Pair<Long, String>> {
         val list = mutableListOf<Pair<Long, String>>()
