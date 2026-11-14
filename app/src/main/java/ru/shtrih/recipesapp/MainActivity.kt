@@ -3,18 +3,23 @@ package ru.shtrih.recipesapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.SearchView
 import android.widget.Spinner
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
-// Главный экран. Список рецептов, поиск, фильтр, удаление, детали и нижняя навигация.
+// Главный экран. Список рецептов, поиск, фильтр по категории и дате, удаление, детали и нижняя навигация.
 class MainActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
@@ -25,6 +30,9 @@ class MainActivity : AppCompatActivity() {
     private var selectedCategoryId: Long = -1L
     // Текст поиска держим отдельно, чтобы фильтр и поиск работали вместе
     private var currentQuery: String = ""
+    // Период фильтра в виде чисел вида 20261114. null — без ограничения
+    private var filterFrom: Int? = null
+    private var filterTo: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +45,8 @@ class MainActivity : AppCompatActivity() {
         val searchView = findViewById<SearchView>(R.id.searchView)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         val categoryFilter = findViewById<Spinner>(R.id.categoryFilter)
+        val dateFilterButton = findViewById<Button>(R.id.dateFilterButton)
+        val clearDateButton = findViewById<Button>(R.id.clearDateButton)
 
         // Список сверху вниз. Два колбэка: удаление и открытие деталей.
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -49,6 +59,17 @@ class MainActivity : AppCompatActivity() {
 
         addButton.setOnClickListener {
             startActivity(Intent(this, AddRecipeActivity::class.java))
+        }
+
+        // Выбор периода: открываем календарь с диапазоном дат
+        dateFilterButton.setOnClickListener { showDatePicker(dateFilterButton) }
+
+        // Сброс периода: показываем все даты
+        clearDateButton.setOnClickListener {
+            filterFrom = null
+            filterTo = null
+            dateFilterButton.text = getString(R.string.date_filter_all)
+            reloadList()
         }
 
         // Поиск по мере ввода. Запоминаем текст, чтобы фильтр его учитывал.
@@ -75,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 filterAdapter.setDropDownViewResource(R.layout.item_category)
                 categoryFilter.adapter = filterAdapter
-// Фон и отступы выпадающего окна
+                // Фон выпадающего окна
                 categoryFilter.setPopupBackgroundResource(R.drawable.bg_dropdown)
             }
         }.start()
@@ -112,15 +133,52 @@ class MainActivity : AppCompatActivity() {
         reloadList()
     }
 
-    // Единая точка загрузки: учитывает и поиск, и фильтр по категории.
+    // Календарь с диапазоном дат. Результат переводим в числа вида 20261114.
+    private fun showDatePicker(button: Button) {
+        val picker = MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText(getString(R.string.date_picker_title))
+            .build()
+        picker.addOnPositiveButtonClickListener { selection ->
+            val start = selection.first
+            val end = selection.second
+            filterFrom = dayKey(start, TimeZone.getTimeZone("UTC"))
+            filterTo = dayKey(end, TimeZone.getTimeZone("UTC"))
+            button.text = getString(R.string.date_range_format, formatDay(start), formatDay(end))
+            reloadList()
+        }
+        picker.show(supportFragmentManager, "date_range")
+    }
+
+    // Дата в виде 20261114 для сравнения. Календарь в UTC — чтобы выбранный день не сдвигался.
+    private fun dayKey(millis: Long, zone: TimeZone): Int {
+        val c = Calendar.getInstance(zone).apply { timeInMillis = millis }
+        return c.get(Calendar.YEAR) * 10000 + (c.get(Calendar.MONTH) + 1) * 100 + c.get(Calendar.DAY_OF_MONTH)
+    }
+
+    private fun formatDay(millis: Long): String {
+        return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }.format(millis)
+    }
+
+    // Единая точка загрузки: учитывает поиск, фильтр по категории и период.
     private fun reloadList() {
+        // Копируем значения фильтров до запуска потока
+        val categoryId = selectedCategoryId
+        val query = currentQuery
+        val from = filterFrom
+        val to = filterTo
+
         Thread {
             val userId = Session.getUserId(this)
-            val recipes = when {
-                selectedCategoryId != -1L -> dbHelper.getRecipesByCategory(userId, selectedCategoryId)
-                    .filter { currentQuery.isEmpty() || it.title.lowercase().contains(currentQuery.lowercase()) }
-                currentQuery.isNotEmpty() -> dbHelper.searchRecipes(userId, currentQuery)
+            val recipes = (when {
+                categoryId != -1L -> dbHelper.getRecipesByCategory(userId, categoryId)
+                    .filter { query.isEmpty() || it.title.lowercase().contains(query.lowercase()) }
+                query.isNotEmpty() -> dbHelper.searchRecipes(userId, query)
                 else -> dbHelper.getRecipes(userId)
+            }).filter { recipe ->
+                val key = dayKey(recipe.createdAt, TimeZone.getDefault())
+                (from == null || key >= from) && (to == null || key <= to)
             }
             runOnUiThread {
                 adapter.updateItems(recipes)
@@ -150,8 +208,7 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    // Открываем экран деталей и передаём данные рецепта, включая id для редактирования
-// Открываем детали и передаём все данные рецепта, включая путь к фото
+    // Открываем детали и передаём все данные рецепта, включая путь к фото
     private fun openDetail(recipe: Recipe) {
         val intent = Intent(this, RecipeDetailActivity::class.java).apply {
             putExtra(RecipeDetailActivity.EXTRA_ID, recipe.id)

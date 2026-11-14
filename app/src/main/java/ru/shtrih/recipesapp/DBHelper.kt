@@ -5,14 +5,15 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-// Модель рецепта для списка и деталей. imagePath — путь к фото или null.
+// Модель рецепта для списка и деталей. imagePath — путь к фото или null, createdAt — дата создания в миллисекундах.
 data class Recipe(
     val id: Long,
     val title: String,
     val cookTime: Int,
     val categoryName: String,
     val description: String,
-    val imagePath: String?
+    val imagePath: String?,
+    val createdAt: Long = 0L
 )
 
 // DBHelper отвечает за всю работу с базой SQLite.
@@ -20,8 +21,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
 
     companion object {
         const val DATABASE_NAME = "recipes.db"
-        // 1: Users. 2: Categories и Recipes. 3: роль. 4: фото блюд (image_path).
-        const val DATABASE_VERSION = 4
+        // 1: Users. 2: Categories и Recipes. 3: роль. 4: фото блюд. 5: дата создания рецепта.
+        const val DATABASE_VERSION = 5
 
         const val ADMIN_LOGIN = "admin"
         const val ADMIN_PASSWORD = "admin123"
@@ -44,6 +45,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         const val COL_RECIPE_CATEGORY_ID = "category_id"
         const val COL_RECIPE_USER_ID = "user_id"
         const val COL_RECIPE_IMAGE = "image_path"
+        const val COL_RECIPE_CREATED = "created_at"
     }
 
     // Включаем проверку внешних ключей: SQLite по умолчанию её не выполняет.
@@ -75,6 +77,14 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         // Таблица Recipes версии 2 и 3 ещё без колонки фото. Для версии 1 она уже создана с колонкой.
         if (oldVersion in 2..3) {
             db.execSQL("ALTER TABLE $TABLE_RECIPES ADD COLUMN $COL_RECIPE_IMAGE TEXT")
+        }
+        // Версии 2–4 ещё без даты. Старым рецептам ставим дату миграции.
+        if (oldVersion in 2..4) {
+            db.execSQL("ALTER TABLE $TABLE_RECIPES ADD COLUMN $COL_RECIPE_CREATED INTEGER NOT NULL DEFAULT 0")
+            db.execSQL(
+                "UPDATE $TABLE_RECIPES SET $COL_RECIPE_CREATED = ${System.currentTimeMillis()} " +
+                        "WHERE $COL_RECIPE_CREATED = 0"
+            )
         }
     }
 
@@ -114,6 +124,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                 $COL_RECIPE_CATEGORY_ID INTEGER NOT NULL,
                 $COL_RECIPE_USER_ID INTEGER,
                 $COL_RECIPE_IMAGE TEXT,
+                $COL_RECIPE_CREATED INTEGER NOT NULL DEFAULT 0,
                 FOREIGN KEY ($COL_RECIPE_CATEGORY_ID) REFERENCES $TABLE_CATEGORIES($COL_CAT_ID),
                 FOREIGN KEY ($COL_RECIPE_USER_ID) REFERENCES $TABLE_USERS($COL_USER_ID)
             )
@@ -234,7 +245,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         }
     }
 
-    // Добавляем рецепт, привязываем к пользователю и сохраняем путь к фото
+    // Добавляем рецепт, привязываем к пользователю, сохраняем фото и дату создания
     fun addRecipe(
         title: String,
         description: String,
@@ -250,6 +261,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             put(COL_RECIPE_CATEGORY_ID, categoryId)
             put(COL_RECIPE_USER_ID, userId)
             put(COL_RECIPE_IMAGE, imagePath)
+            put(COL_RECIPE_CREATED, System.currentTimeMillis())
         }
         return writableDatabase.insert(TABLE_RECIPES, null, values)
     }
@@ -283,7 +295,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         val list = mutableListOf<Recipe>()
         val sql = """
             SELECT r.$COL_RECIPE_ID, r.$COL_RECIPE_TITLE, r.$COL_RECIPE_COOK_TIME,
-                   c.$COL_CAT_NAME, r.$COL_RECIPE_DESCRIPTION, r.$COL_RECIPE_IMAGE
+                   c.$COL_CAT_NAME, r.$COL_RECIPE_DESCRIPTION, r.$COL_RECIPE_IMAGE,
+                   r.$COL_RECIPE_CREATED
             FROM $TABLE_RECIPES r
             JOIN $TABLE_CATEGORIES c ON c.$COL_CAT_ID = r.$COL_RECIPE_CATEGORY_ID
             $whereClause
@@ -299,7 +312,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                         cookTime = cursor.getInt(2),
                         categoryName = cursor.getString(3),
                         description = cursor.getString(4) ?: "",
-                        imagePath = cursor.getString(5)
+                        imagePath = cursor.getString(5),
+                        createdAt = cursor.getLong(6)
                     )
                 )
             }
@@ -316,7 +330,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         ) > 0
     }
 
-    // Обновляем существующий рецепт, включая фото
+    // Обновляем существующий рецепт, включая фото. Дата создания не меняется.
     fun updateRecipe(
         recipeId: Long,
         title: String,
@@ -373,9 +387,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             }
         }
         return list
-
-
     }
+
     // Все пользователи с количеством их рецептов, для админки
     fun getAdminUsers(): List<AdminUser> {
         val list = mutableListOf<AdminUser>()
@@ -413,7 +426,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     }
 
     // Удаляем пользователя вместе с его рецептами.
-// Сначала рецепты (внешний ключ), потом пользователя, всё в одной транзакции.
+    // Сначала рецепты (внешний ключ), потом пользователя, всё в одной транзакции.
     fun deleteUser(userId: Long): Boolean {
         val db = writableDatabase
         db.beginTransaction()

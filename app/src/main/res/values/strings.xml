@@ -99,5 +99,9 @@
     <string name="err_category_empty">Выберите категорию</string>
     <string name="err_photo_load">Не удалось загрузить фото</string>
     <string name="recipe_saved">Рецепт сохранён</string>
-
+    <!-- Фильтр по дате -->
+    <string name="date_filter_all">Все даты</string>
+    <string name="date_clear">Сбросить</string>
+    <string name="date_picker_title">Выберите период</string>
+    <string name="date_range_format">%1$s – %2$s</string>
 </resources>
