@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_large">
 
         <!-- Большое фото блюда -->
         <ImageView
             android:id="@+id/detailImage"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="@dimen/image_detail_height"
             android:background="?attr/colorSurfaceVariant"
             android:scaleType="centerCrop" />
 
@@ -24,46 +24,46 @@
             android:id="@+id/detailTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="24sp"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:textSize="@dimen/text_title_big"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/detailCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp" />
+            android:layout_marginTop="@dimen/spacing_small"
+            android:textSize="@dimen/text_body" />
 
         <TextView
             android:id="@+id/detailTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="16sp" />
+            android:layout_marginTop="@dimen/spacing_xsmall"
+            android:textSize="@dimen/text_body" />
 
         <!-- Описание: ингредиенты и шаги -->
         <TextView
             android:id="@+id/detailDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp" />
+            android:layout_marginTop="@dimen/spacing_large"
+            android:textSize="@dimen/text_body" />
 
         <Button
             android:id="@+id/editButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:minHeight="48dp"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:minHeight="@dimen/button_min_height"
             android:text="@string/edit_recipe" />
 
         <Button
             android:id="@+id/backButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="48dp"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:minHeight="@dimen/button_min_height"
             android:text="@string/back" />
 
     </LinearLayout>

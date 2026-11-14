@@ -12,42 +12,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="@dimen/spacing_xlarge">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stats_title"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="26sp"
+            android:textSize="@dimen/text_headline"
             android:textStyle="bold" />
 
         <!-- Сводка: всего рецептов и самая популярная категория -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/spacing_large"
             app:cardBackgroundColor="?attr/colorSecondaryContainer"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="@dimen/card_radius_large"
             app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/statsSummary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="20dp"
+                android:padding="@dimen/spacing_xlarge"
                 android:textColor="?attr/colorOnSecondaryContainer"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_body" />
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/emptyStats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
             android:text="@string/stats_empty"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_body"
             android:visibility="gone" />
 
         <!-- Сюда добавляются карточки категорий из кода -->
@@ -55,7 +55,7 @@
             android:id="@+id/statsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/spacing_large"
             android:orientation="vertical" />
 
         <com.google.android.material.button.MaterialButton
@@ -63,10 +63,10 @@
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:minHeight="56dp"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:minHeight="@dimen/field_height"
             android:text="@string/back"
-            app:cornerRadius="16dp" />
+            app:cornerRadius="@dimen/card_corner_radius" />
 
     </LinearLayout>
 </ScrollView>

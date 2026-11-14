@@ -5,18 +5,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="@dimen/spacing_medium"
     app:cardBackgroundColor="?attr/colorSurface"
-    app:cardCornerRadius="20dp"
+    app:cardCornerRadius="@dimen/card_radius_large"
     app:cardElevation="0dp"
     app:strokeColor="?attr/colorOutlineVariant"
-    app:strokeWidth="1dp">
+    app:strokeWidth="@dimen/stroke_width">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_large">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="17sp"
+                android:textSize="@dimen/text_body_large"
                 android:textStyle="bold" />
 
             <TextView
@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorPrimary"
-                android:textSize="17sp"
+                android:textSize="@dimen/text_body_large"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -46,10 +46,10 @@
             android:id="@+id/statBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/spacing_medium"
             app:indicatorColor="?attr/colorPrimary"
             app:trackColor="?attr/colorSurfaceVariant"
-            app:trackCornerRadius="4dp"
-            app:trackThickness="8dp" />
+            app:trackCornerRadius="@dimen/bar_radius"
+            app:trackThickness="@dimen/bar_thickness" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

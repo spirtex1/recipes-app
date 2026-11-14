@@ -7,44 +7,44 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="@dimen/spacing_xlarge">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/admin_panel"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="26sp"
+        android:textSize="@dimen/text_headline"
         android:textStyle="bold" />
 
     <!-- Две карточки статистики в ряд -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing_large"
         android:orientation="horizontal">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="@dimen/spacing_tiny"
             app:cardBackgroundColor="?attr/colorSecondaryContainer"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="@dimen/card_radius_large"
             app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/spacing_large">
 
                 <TextView
                     android:id="@+id/statUsers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorOnSecondaryContainer"
-                    android:textSize="28sp"
+                    android:textSize="@dimen/text_stat"
                     android:textStyle="bold" />
 
                 <TextView
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/admin_stat_users_label"
                     android:textColor="?attr/colorOnSecondaryContainer"
-                    android:textSize="13sp" />
+                    android:textSize="@dimen/text_section" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -60,23 +60,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="@dimen/spacing_tiny"
             app:cardBackgroundColor="?attr/colorSecondaryContainer"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="@dimen/card_radius_large"
             app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/spacing_large">
 
                 <TextView
                     android:id="@+id/statRecipes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorOnSecondaryContainer"
-                    android:textSize="28sp"
+                    android:textSize="@dimen/text_stat"
                     android:textStyle="bold" />
 
                 <TextView
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/admin_stat_recipes_label"
                     android:textColor="?attr/colorOnSecondaryContainer"
-                    android:textSize="13sp" />
+                    android:textSize="@dimen/text_section" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
@@ -93,10 +93,10 @@
         android:id="@+id/usersTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="@dimen/spacing_xxlarge"
         android:text="@string/admin_users_title"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_subtitle"
         android:textStyle="bold" />
 
     <!-- Список пользователей занимает всё свободное место -->
@@ -105,7 +105,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/spacing_medium"
         android:clipToPadding="false" />
 
     <com.google.android.material.button.MaterialButton
@@ -113,9 +113,9 @@
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:minHeight="56dp"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:minHeight="@dimen/field_height"
         android:text="@string/back"
-        app:cornerRadius="16dp" />
+        app:cornerRadius="@dimen/card_corner_radius" />
 
 </LinearLayout>

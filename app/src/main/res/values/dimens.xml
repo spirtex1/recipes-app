@@ -1,26 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Отступы -->
     <dimen name="screen_padding">16dp</dimen>
-    <dimen name="card_corner_radius">16dp</dimen>
-    <dimen name="card_elevation">2dp</dimen>
-    <dimen name="button_height">52dp</dimen>
-    <dimen name="field_min_height">48dp</dimen>
+    <dimen name="spacing_tiny">6dp</dimen>
+    <dimen name="spacing_xsmall">4dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_medium">12dp</dimen>
-    <dimen name="spacing_large">24dp</dimen>
-    <dimen name="text_title">24sp</dimen>
-    <dimen name="text_body">16sp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
+    <dimen name="spacing_xlarge">20dp</dimen>
+    <dimen name="spacing_xxlarge">24dp</dimen>
+    <dimen name="spacing_huge">28dp</dimen>
+    <dimen name="spacing_max">32dp</dimen>
     <dimen name="title_margin">20dp</dimen>
-    <dimen name="title_size">28sp</dimen>
-    <dimen name="field_height">56dp</dimen>
-    <dimen name="card_radius_large">20dp</dimen>
     <dimen name="card_inner_padding">14dp</dimen>
-    <dimen name="stroke_width">1dp</dimen>
-    <dimen name="image_size">96dp</dimen>
-    <dimen name="spacing_xsmall">4dp</dimen>
     <dimen name="chip_padding_horizontal">10dp</dimen>
-    <dimen name="text_caption">12sp</dimen>
+    <dimen name="stroke_width">1dp</dimen>
+
+    <!-- Скругления -->
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_radius_large">20dp</dimen>
+    <dimen name="card_radius_xl">24dp</dimen>
+
+    <!-- Размеры элементов -->
+    <dimen name="logo_size">88dp</dimen>
+    <dimen name="avatar_size">64dp</dimen>
+    <dimen name="avatar_small">44dp</dimen>
+    <dimen name="image_size">96dp</dimen>
+    <dimen name="image_preview_height">200dp</dimen>
+    <dimen name="image_detail_height">240dp</dimen>
+    <dimen name="description_min_height">120dp</dimen>
+    <dimen name="field_height">56dp</dimen>
+    <dimen name="button_min_height">48dp</dimen>
+    <dimen name="button_min_height_sm">44dp</dimen>
+    <dimen name="button_min_height_xs">40dp</dimen>
+    <dimen name="bar_thickness">8dp</dimen>
+    <dimen name="bar_radius">4dp</dimen>
+
+    <!-- Текст -->
+    <dimen name="text_logo">40sp</dimen>
+    <dimen name="title_size">28sp</dimen>
+    <dimen name="text_headline">26sp</dimen>
+    <dimen name="text_welcome">22sp</dimen>
+    <dimen name="text_title_big">24sp</dimen>
+    <dimen name="text_stat">28sp</dimen>
+    <dimen name="text_avatar">28sp</dimen>
+    <dimen name="text_greeting">20sp</dimen>
     <dimen name="text_subtitle">18sp</dimen>
+    <dimen name="text_body_large">17sp</dimen>
+    <dimen name="text_body">16sp</dimen>
+    <dimen name="text_body_medium">15sp</dimen>
     <dimen name="text_small">14sp</dimen>
-    <dimen name="button_min_height">40dp</dimen>
+    <dimen name="text_section">13sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+
 </resources>
