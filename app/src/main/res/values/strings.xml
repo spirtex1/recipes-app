@@ -90,5 +90,14 @@
     <!-- Заголовок списка пользователей со счётчиком -->
     <string name="admin_users_title_count">Пользователи (%1$d)</string>
     <string name="admin_user_info">%1$s · Рецептов: %2$d</string>
+    <!-- Ошибки и сообщения в формах -->
+    <string name="err_login_empty">Введите логин</string>
+    <string name="err_title_empty">Введите название</string>
+    <string name="err_time_empty">Введите время</string>
+    <string name="err_time_invalid">Введите число больше нуля</string>
+    <string name="err_categories_loading">Категории ещё не загружены</string>
+    <string name="err_category_empty">Выберите категорию</string>
+    <string name="err_photo_load">Не удалось загрузить фото</string>
+    <string name="recipe_saved">Рецепт сохранён</string>
 
 </resources>

@@ -45,7 +45,7 @@ class AddRecipeActivity : AppCompatActivity() {
                         imagePath = saved
                         showPreview(saved)
                     } else {
-                        Toast.makeText(this, "Не удалось загрузить фото", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.err_photo_load), Toast.LENGTH_SHORT).show()
                     }
                 }
             }.start()
@@ -117,25 +117,25 @@ class AddRecipeActivity : AppCompatActivity() {
 
             // Валидация: пустые поля не падают и не сохраняются
             if (titleText.isEmpty()) {
-                titleInput.error = "Введите название"
+                titleInput.error = getString(R.string.err_title_empty)
                 return@setOnClickListener
             }
             if (timeText.isEmpty()) {
-                timeInput.error = "Введите время"
+                timeInput.error = getString(R.string.err_time_empty)
                 return@setOnClickListener
             }
             val cookTime = timeText.toIntOrNull()
             if (cookTime == null || cookTime <= 0) {
-                timeInput.error = "Введите число больше нуля"
+                timeInput.error = getString(R.string.err_time_invalid)
                 return@setOnClickListener
             }
             if (categories.isEmpty()) {
-                Toast.makeText(this, "Категории ещё не загружены", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.err_categories_loading), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val position = categorySpinner.selectedItemPosition
             if (position < 0 || position >= categories.size) {
-                Toast.makeText(this, "Выберите категорию", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.err_category_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -154,7 +154,7 @@ class AddRecipeActivity : AppCompatActivity() {
                 } else {
                     dbHelper.addRecipe(titleText, descriptionText, cookTime, categoryId, Session.getUserId(this), photo)
                     runOnUiThread {
-                        Toast.makeText(this, "Рецепт сохранён", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.recipe_saved), Toast.LENGTH_SHORT).show()
                         finish()
                     }
                 }

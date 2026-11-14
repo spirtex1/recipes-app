@@ -31,7 +31,7 @@ class RegisterActivity : AppCompatActivity() {
 
             // Валидация: пустые поля, короткий пароль и несовпадение паролей
             if (login.isEmpty()) {
-                loginInput.error = "Введите логин"
+                loginInput.error = getString(R.string.err_login_empty)
                 return@setOnClickListener
             }
             if (password.length < 4) {
