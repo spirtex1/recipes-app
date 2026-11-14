@@ -1,128 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Главный экран: заголовок, поиск и фильтры, список, кнопка и навигация -->
+<!-- Контейнер для фрагментов и нижняя навигация -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Заголовок экрана -->
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/title_margin"
-        android:layout_marginTop="@dimen/title_margin"
-        android:text="@string/screen_title"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="@dimen/title_size"
-        android:textStyle="bold"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Поиск: скруглённое поле, чуть выше обычного, с отступами -->
-    <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/screen_padding"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:background="@drawable/bg_field"
-        android:minHeight="@dimen/field_height"
-        android:iconifiedByDefault="false"
-        android:queryHint="@string/search_hint"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleText" />
-
-    <!-- Фильтр по категории: высокая кнопка-поле, удобно нажимать -->
-    <Spinner
-        android:id="@+id/categoryFilter"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/screen_padding"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:background="@drawable/bg_field"
-        android:minHeight="@dimen/field_height"
-        android:paddingHorizontal="@dimen/spacing_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
-
-    <!-- Фильтр по дате: кнопка выбора периода и сброс -->
-    <LinearLayout
-        android:id="@+id/dateRow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/screen_padding"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoryFilter">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/dateFilterButton"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:minHeight="@dimen/button_min_height_sm"
-            android:text="@string/date_filter_all"
-            app:cornerRadius="@dimen/card_corner_radius" />
-
-        <Button
-            android:id="@+id/clearDateButton"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/button_min_height_sm"
-            android:text="@string/date_clear" />
-    </LinearLayout>
-
-    <!-- Список рецептов -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recipesList"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/spacing_small"
-        app:layout_constraintBottom_toTopOf="@+id/addRecipeButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateRow" />
-
-    <!-- Текст-заглушка, когда рецептов нет -->
-    <TextView
-        android:id="@+id/emptyText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/empty_list"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/recipesList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/recipesList" />
-
-    <!-- Кнопка добавления с иконкой над нижней навигацией -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addRecipeButton"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/screen_padding"
-        android:minHeight="@dimen/field_height"
-        android:text="@string/add_recipe"
-        app:cornerRadius="@dimen/card_corner_radius"
-        app:icon="@android:drawable/ic_input_add"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Нижняя навигация -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
