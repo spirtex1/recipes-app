@@ -133,6 +133,15 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         }
         db.insertWithOnConflict(TABLE_USERS, null, values, SQLiteDatabase.CONFLICT_IGNORE)
     }
+    // Логин пользователя по id, нужен для приветствия в профиле
+    fun getUserLogin(userId: Long): String {
+        readableDatabase.rawQuery(
+            "SELECT $COL_USER_LOGIN FROM $TABLE_USERS WHERE $COL_USER_ID = ?",
+            arrayOf(userId.toString())
+        ).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getString(0) else ""
+        }
+    }
 
     // Регистрация. Возвращаем id новой строки или -1, если логин занят.
     fun registerUser(login: String, password: String): Long {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RecipesApp</string>
+    <string name="app_name">Рецепты</string>
     <string name="login_title">Вход</string>
     <string name="login_hint">Логин</string>
     <string name="password_hint">Пароль</string>
@@ -41,4 +41,14 @@
     <string name="stats_title">Статистика по категориям</string>
     <string name="stats_item">%1$s: %2$d</string>
     <string name="stats_empty">Рецептов пока нет</string>
+    <!-- Экран профиля -->
+    <string name="profile_title">Профиль</string>
+    <string name="profile_greeting">Здравствуйте, %1$s</string>
+    <string name="profile_role_user">Пользователь</string>
+    <string name="profile_role_admin">Администратор</string>
+    <string name="profile_section_settings">Настройки</string>
+    <string name="profile_section_data">Данные</string>
+    <!-- Краткая статистика в карточке профиля -->
+    <string name="stats_summary">Всего рецептов: %1$d</string>
+    <string name="profile_section_account">Аккаунт</string>
 </resources>

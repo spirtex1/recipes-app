@@ -3,21 +3,18 @@ package ru.shtrih.recipesapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.SearchView
 import android.widget.Spinner
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 
-// Главный экран. Список рецептов, поиск, фильтр по категории, удаление, детали и нижняя навигация.
+// Главный экран. Список рецептов, поиск, фильтр, удаление, детали и нижняя навигация.
 class MainActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
@@ -90,13 +87,13 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // Нижняя навигация: «Рецепты» остаётся на экране, «Профиль» открывает меню
+        // Нижняя навигация: «Рецепты» остаётся на экране, «Профиль» открывает отдельный экран
         bottomNav.selectedItemId = R.id.nav_recipes
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_recipes -> true
                 R.id.nav_profile -> {
-                    showProfileMenu()
+                    openProfile()
                     true
                 }
                 else -> false
@@ -113,7 +110,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Единая точка загрузки: учитывает и поиск, и фильтр по категории.
-    // Если выбран фильтр, берём рецепты категории, иначе все, а поиск применяем поверх.
     private fun reloadList() {
         Thread {
             val userId = Session.getUserId(this)
@@ -151,8 +147,7 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    // Открываем экран деталей и передаём данные рецепта через Intent
-// Открываем экран деталей и передаём данные рецепта, включая id для редактирования
+    // Открываем экран деталей и передаём данные рецепта, включая id для редактирования
     private fun openDetail(recipe: Recipe) {
         val intent = Intent(this, RecipeDetailActivity::class.java).apply {
             putExtra(RecipeDetailActivity.EXTRA_ID, recipe.id)
@@ -164,52 +159,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // Меню профиля: тема, админка (только для админа) и выход
-// Меню профиля: тема, статистика, админка (только для админа) и выход
-    private fun showProfileMenu() {
-        Thread {
-            val isAdmin = dbHelper.getUserRole(Session.getUserId(this)) == "admin"
-            runOnUiThread {
-                val options = mutableListOf(
-                    getString(R.string.theme_toggle),
-                    getString(R.string.stats_title)
-                )
-                if (isAdmin) options.add(getString(R.string.admin_panel))
-                options.add(getString(R.string.logout))
-
-                AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.nav_profile))
-                    .setItems(options.toTypedArray()) { _, which ->
-                        when (options[which]) {
-                            getString(R.string.theme_toggle) -> toggleTheme()
-                            getString(R.string.stats_title) -> startActivity(Intent(this, StatsActivity::class.java))
-                            getString(R.string.admin_panel) -> startActivity(Intent(this, AdminActivity::class.java))
-                            getString(R.string.logout) -> logout()
-                        }
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-            }
-        }.start()
-    }
-
-    // Переключаем тему и сохраняем выбор. Экран пересоздастся сам.
-    private fun toggleTheme() {
-        val nowDark = !Session.isDarkTheme(this)
-        Session.setDarkTheme(this, nowDark)
-        AppCompatDelegate.setDefaultNightMode(
-            if (nowDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
-    }
-
-    // Выход: стираем сессию и возвращаемся на экран входа, очистив стек экранов
-    private fun logout() {
-        Session.logout(this)
-        Toast.makeText(this, getString(R.string.logout_done), Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, LoginActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
-        startActivity(intent)
-        finish()
+    // Профиль открывается как отдельный экран
+    private fun openProfile() {
+        startActivity(Intent(this, ProfileActivity::class.java))
     }
 }
