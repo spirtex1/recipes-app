@@ -69,11 +69,14 @@ class MainActivity : AppCompatActivity() {
                 filterCategories = listOf(-1L to getString(R.string.filter_all)) + cats
                 val filterAdapter = ArrayAdapter(
                     this,
-                    android.R.layout.simple_spinner_item,
+                    R.layout.item_category_selected,
+                    R.id.categoryText,
                     filterCategories.map { it.second }
                 )
-                filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                filterAdapter.setDropDownViewResource(R.layout.item_category)
                 categoryFilter.adapter = filterAdapter
+// Фон и отступы выпадающего окна
+                categoryFilter.setPopupBackgroundResource(R.drawable.bg_dropdown)
             }
         }.start()
 

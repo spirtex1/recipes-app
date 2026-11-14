@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Тёмная тема: включается, когда в системе выбрана тёмная тема -->
+<!-- Тёмная тема: тёмно-синий фон, светлый текст, пилюля навигации в акцентном цвете -->
 <resources>
 
     <style name="Theme.RecipesApp" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/on_primary_dark</item>
-        <item name="colorSecondary">@color/secondary_dark</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+        <item name="colorSurfaceVariant">@color/surface_variant_dark</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_dark</item>
+        <item name="colorSecondaryContainer">@color/primary_container_dark</item>
+        <item name="colorOnSecondaryContainer">@color/on_primary_container_dark</item>
+        <item name="colorOutlineVariant">@color/outline_dark</item>
+        <item name="colorError">@color/error_dark</item>
         <item name="android:windowBackground">@color/background_dark</item>
     </style>
 

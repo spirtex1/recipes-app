@@ -45,6 +45,7 @@ class ProfileActivity : AppCompatActivity() {
             val login = dbHelper.getUserLogin(userId)
             val recipesCount = dbHelper.getRecipesCount()
             runOnUiThread {
+                findViewById<TextView>(R.id.avatarLetter).text = login.take(1).uppercase()
                 findViewById<TextView>(R.id.greetingText).text =
                     getString(R.string.profile_greeting, login)
                 findViewById<TextView>(R.id.roleText).text =

@@ -1,36 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Главный экран: поиск сверху, список рецептов, кнопка добавления и нижняя навигация -->
+<!-- Главный экран: заголовок, поиск и фильтр в скруглённых полях, список, кнопка и навигация -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- Поиск по рецептам сверху экрана -->
+
+    <!-- Заголовок экрана -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/screen_title"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Поиск: скруглённое поле, чуть выше обычного, с отступами -->
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_field"
+        android:minHeight="56dp"
+        android:iconifiedByDefault="false"
         android:queryHint="@string/search_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/titleText" />
 
-    <!-- Поиск по рецептам сверху экрана -->
-    <!-- Фильтр по категории под поиском -->
+    <!-- Фильтр по категории: высокая кнопка-поле, удобно нажимать -->
     <Spinner
         android:id="@+id/categoryFilter"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_field"
+        android:minHeight="56dp"
+        android:paddingHorizontal="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
-        android:minHeight="48dp" />
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
-    <!-- Список рецептов теперь под фильтром -->
+    <!-- Список рецептов -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recipesList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/addRecipeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,24 +68,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/empty_list"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/recipesList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/recipesList" />
 
-    <!-- Кнопка добавления рецепта над нижней навигацией -->
-    <Button
+    <!-- Кнопка добавления с иконкой над нижней навигацией -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addRecipeButton"
+        style="@style/Widget.Material3.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:minHeight="56dp"
         android:text="@string/add_recipe"
+        app:cornerRadius="16dp"
+        app:icon="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Нижняя навигация: Рецепты и Профиль -->
+    <!-- Нижняя навигация -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"

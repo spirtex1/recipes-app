@@ -53,4 +53,42 @@
     <string name="profile_section_account">Аккаунт</string>
     <!-- Выбор фото блюда -->
     <string name="pick_photo">Добавить фото</string>
+    <!-- Заголовок главного экрана -->
+    <string name="screen_title">Мои рецепты</string>
+    <!-- Экраны входа и регистрации -->
+    <string name="logo_letter">Р</string>
+    <string name="tagline">Ваша кулинарная книга</string>
+    <string name="login_welcome">С возвращением</string>
+    <string name="login_subtitle">Войдите, чтобы открыть свои рецепты</string>
+    <string name="no_account">Нет аккаунта?</string>
+    <string name="create_account">Создать аккаунт</string>
+    <string name="demo_hint">Тестовый вход: admin / admin123</string>
+    <string name="register_title">Новый аккаунт</string>
+    <string name="register_subtitle">Придумайте логин и пароль</string>
+    <string name="confirm_hint">Повторите пароль</string>
+    <string name="register_submit">Зарегистрироваться</string>
+    <string name="have_account">Уже есть аккаунт? Войти</string>
+    <string name="register_success">Регистрация успешна</string>
+    <string name="login_exists">Такой логин уже существует</string>
+    <string name="password_short">Минимум 4 символа</string>
+    <string name="passwords_mismatch">Пароли не совпадают</string>
+    <!-- Статистика -->
+    <string name="stats_total_label">Всего рецептов: %1$d</string>
+    <string name="stats_top_label">Чаще всего: %1$s (%2$d)</string>
+    <!-- Админка: статистика и список пользователей -->
+    <string name="admin_stat_users_label">Пользователей</string>
+    <string name="admin_stat_recipes_label">Рецептов</string>
+    <string name="admin_users_title">Пользователи</string>
+    <string name="admin_recipes_count">Рецептов: %1$d</string>
+    <string name="admin_make_admin">Сделать админом</string>
+    <string name="admin_remove_admin">Снять админа</string>
+    <string name="admin_delete_user">Удалить</string>
+    <string name="admin_confirm_delete">Удалить пользователя %1$s и все его рецепты?</string>
+    <string name="admin_deleted">Пользователь удалён</string>
+    <string name="admin_role_changed">Роль изменена</string>
+    <string name="admin_self_action">Это ваш аккаунт</string>
+    <!-- Заголовок списка пользователей со счётчиком -->
+    <string name="admin_users_title_count">Пользователи (%1$d)</string>
+    <string name="admin_user_info">%1$s · Рецептов: %2$d</string>
+
 </resources>

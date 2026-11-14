@@ -373,5 +373,57 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             }
         }
         return list
+
+
+    }
+    // Все пользователи с количеством их рецептов, для админки
+    fun getAdminUsers(): List<AdminUser> {
+        val list = mutableListOf<AdminUser>()
+        val sql = """
+        SELECT u.$COL_USER_ID, u.$COL_USER_LOGIN, u.$COL_USER_ROLE, COUNT(r.$COL_RECIPE_ID)
+        FROM $TABLE_USERS u
+        LEFT JOIN $TABLE_RECIPES r ON r.$COL_RECIPE_USER_ID = u.$COL_USER_ID
+        GROUP BY u.$COL_USER_ID, u.$COL_USER_LOGIN, u.$COL_USER_ROLE
+        ORDER BY u.$COL_USER_ID
+    """.trimIndent()
+        readableDatabase.rawQuery(sql, null).use { cursor ->
+            while (cursor.moveToNext()) {
+                list.add(
+                    AdminUser(
+                        id = cursor.getLong(0),
+                        login = cursor.getString(1),
+                        role = cursor.getString(2),
+                        recipesCount = cursor.getInt(3)
+                    )
+                )
+            }
+        }
+        return list
+    }
+
+    // Меняем роль пользователя: "admin" или "user"
+    fun setUserRole(userId: Long, role: String): Boolean {
+        val values = ContentValues().apply { put(COL_USER_ROLE, role) }
+        return writableDatabase.update(
+            TABLE_USERS,
+            values,
+            "$COL_USER_ID = ?",
+            arrayOf(userId.toString())
+        ) > 0
+    }
+
+    // Удаляем пользователя вместе с его рецептами.
+// Сначала рецепты (внешний ключ), потом пользователя, всё в одной транзакции.
+    fun deleteUser(userId: Long): Boolean {
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            db.delete(TABLE_RECIPES, "$COL_RECIPE_USER_ID = ?", arrayOf(userId.toString()))
+            val rows = db.delete(TABLE_USERS, "$COL_USER_ID = ?", arrayOf(userId.toString()))
+            db.setTransactionSuccessful()
+            return rows > 0
+        } finally {
+            db.endTransaction()
+        }
     }
 }

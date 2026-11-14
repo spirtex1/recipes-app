@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
+// Экран входа. Регистрация открывается отдельным экраном RegisterActivity.
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DBHelper
@@ -14,7 +15,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Если уже вошли раньше, сессия есть, экран входа не нужен
+        // Если уже вошли раньше, экран входа не нужен
         if (Session.getUserId(this) != -1L) {
             openMain()
             return
@@ -33,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
             val login = loginInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            // Запрос в базу — в фоне, результат — в главном потоке
+            // Проверка в базе идёт в фоне, результат показываем в главном потоке
             Thread {
                 val userId = dbHelper.getUserId(login, password)
                 runOnUiThread {
@@ -48,26 +49,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            if (!validate(loginInput, passwordInput)) return@setOnClickListener
-            val login = loginInput.text.toString().trim()
-            val password = passwordInput.text.toString().trim()
-
-            Thread {
-                val userId = dbHelper.registerUser(login, password)
-                runOnUiThread {
-                    if (userId != -1L) {
-                        Session.saveUser(this, userId)
-                        Toast.makeText(this, "Регистрация успешна", Toast.LENGTH_SHORT).show()
-                        openMain()
-                    } else {
-                        Toast.makeText(this, "Такой логин уже существует", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }.start()
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
-    // Проверка пустых полей: setError, как в TC-02
+    // Проверка пустых полей через setError, как в TC-02
     private fun validate(loginInput: EditText, passwordInput: EditText): Boolean {
         if (loginInput.text.toString().trim().isEmpty()) {
             loginInput.error = "Введите логин"
