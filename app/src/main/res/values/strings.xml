@@ -51,4 +51,6 @@
     <!-- Краткая статистика в карточке профиля -->
     <string name="stats_summary">Всего рецептов: %1$d</string>
     <string name="profile_section_account">Аккаунт</string>
+    <!-- Выбор фото блюда -->
+    <string name="pick_photo">Добавить фото</string>
 </resources>

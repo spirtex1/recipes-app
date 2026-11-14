@@ -1,16 +1,18 @@
 package ru.shtrih.recipesapp
 
 import android.app.Activity
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
-// Экран добавления и редактирования рецепта.
-// Если пришёл EXTRA_RECIPE_ID, поля заполняются и сохранение обновляет рецепт.
+// Экран добавления и редактирования рецепта. Если пришёл EXTRA_RECIPE_ID, это правка.
 class AddRecipeActivity : AppCompatActivity() {
 
     companion object {
@@ -19,11 +21,31 @@ class AddRecipeActivity : AppCompatActivity() {
         const val EXTRA_CATEGORY = "extra_category"
         const val EXTRA_TIME = "extra_time"
         const val EXTRA_DESCRIPTION = "extra_description"
+        const val EXTRA_IMAGE = "extra_image"
     }
 
     private lateinit var dbHelper: DBHelper
     // Категории в том же порядке, что и в Spinner: (id, название)
     private var categories: List<Pair<Long, String>> = emptyList()
+    // Путь к фото: старое при редактировании или только что выбранное
+    private var imagePath: String? = null
+
+    // Выбор фото из галереи. Копируем и уменьшаем в фоне, потом показываем превью.
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            Thread {
+                val saved = ImageStorage.saveFromUri(this, uri)
+                runOnUiThread {
+                    if (saved != null) {
+                        imagePath = saved
+                        showPreview(saved)
+                    } else {
+                        Toast.makeText(this, "Не удалось загрузить фото", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }.start()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,21 +58,26 @@ class AddRecipeActivity : AppCompatActivity() {
         val descriptionInput = findViewById<EditText>(R.id.descriptionInput)
         val spinner = findViewById<Spinner>(R.id.categorySpinner)
         val saveButton = findViewById<Button>(R.id.saveRecipeButton)
+        val pickPhotoButton = findViewById<Button>(R.id.pickPhotoButton)
 
-        // Если передан id, значит открыли редактирование
+        pickPhotoButton.setOnClickListener { pickPhoto.launch("image/*") }
+
+        // Если пришёл id, открыли редактирование
         val recipeId = intent.getLongExtra(EXTRA_RECIPE_ID, -1L)
         val editing = recipeId != -1L
         val initialCategory = intent.getStringExtra(EXTRA_CATEGORY).orEmpty()
 
-        // В режиме редактирования заполняем поля текущими значениями
+        // В режиме правки заполняем поля и показываем текущее фото
         if (editing) {
             titleInput.setText(intent.getStringExtra(EXTRA_TITLE).orEmpty())
             val time = intent.getIntExtra(EXTRA_TIME, 0)
             if (time > 0) timeInput.setText(time.toString())
             descriptionInput.setText(intent.getStringExtra(EXTRA_DESCRIPTION).orEmpty())
+            imagePath = intent.getStringExtra(EXTRA_IMAGE)
+            imagePath?.let { showPreview(it) }
         }
 
-        // Загружаем категории в фоне и заполняем Spinner
+        // Категории в фоне, затем заполняем Spinner
         Thread {
             categories = dbHelper.getCategories()
             runOnUiThread {
@@ -61,7 +88,6 @@ class AddRecipeActivity : AppCompatActivity() {
                 )
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
-                // При редактировании выбираем текущую категорию рецепта
                 if (editing) {
                     val index = categories.indexOfFirst { it.second == initialCategory }
                     if (index >= 0) spinner.setSelection(index)
@@ -74,7 +100,7 @@ class AddRecipeActivity : AppCompatActivity() {
             val timeText = timeInput.text.toString().trim()
             val descriptionText = descriptionInput.text.toString().trim()
 
-            // Валидация: пустые поля не должны падать или сохраняться
+            // Валидация: пустые поля не падают и не сохраняются
             if (titleText.isEmpty()) {
                 titleInput.error = "Введите название"
                 return@setOnClickListener
@@ -94,18 +120,19 @@ class AddRecipeActivity : AppCompatActivity() {
             }
 
             val categoryId = categories[spinner.selectedItemPosition].first
+            val photo = imagePath
 
-            // Запись в базу в фоне: обновляем существующий рецепт или добавляем новый
+            // Запись в базу в фоне: обновляем рецепт или добавляем новый
             Thread {
                 if (editing) {
-                    dbHelper.updateRecipe(recipeId, titleText, descriptionText, cookTime, categoryId)
+                    dbHelper.updateRecipe(recipeId, titleText, descriptionText, cookTime, categoryId, photo)
                     runOnUiThread {
                         Toast.makeText(this, getString(R.string.recipe_updated), Toast.LENGTH_SHORT).show()
                         setResult(Activity.RESULT_OK)
                         finish()
                     }
                 } else {
-                    dbHelper.addRecipe(titleText, descriptionText, cookTime, categoryId, Session.getUserId(this))
+                    dbHelper.addRecipe(titleText, descriptionText, cookTime, categoryId, Session.getUserId(this), photo)
                     runOnUiThread {
                         Toast.makeText(this, "Рецепт сохранён", Toast.LENGTH_SHORT).show()
                         finish()
@@ -113,5 +140,10 @@ class AddRecipeActivity : AppCompatActivity() {
                 }
             }.start()
         }
+    }
+
+    // Показываем фото в превью. Декодируем здесь, файл маленький, после сжатия.
+    private fun showPreview(path: String) {
+        findViewById<ImageView>(R.id.photoPreview).setImageBitmap(BitmapFactory.decodeFile(path))
     }
 }

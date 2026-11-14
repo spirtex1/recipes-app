@@ -148,6 +148,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Открываем экран деталей и передаём данные рецепта, включая id для редактирования
+// Открываем детали и передаём все данные рецепта, включая путь к фото
     private fun openDetail(recipe: Recipe) {
         val intent = Intent(this, RecipeDetailActivity::class.java).apply {
             putExtra(RecipeDetailActivity.EXTRA_ID, recipe.id)
@@ -155,6 +156,7 @@ class MainActivity : AppCompatActivity() {
             putExtra(RecipeDetailActivity.EXTRA_CATEGORY, recipe.categoryName)
             putExtra(RecipeDetailActivity.EXTRA_TIME, recipe.cookTime)
             putExtra(RecipeDetailActivity.EXTRA_DESCRIPTION, recipe.description)
+            putExtra(RecipeDetailActivity.EXTRA_IMAGE, recipe.imagePath)
         }
         startActivity(intent)
     }
