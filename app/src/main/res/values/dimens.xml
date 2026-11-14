@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="field_min_height">48dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">12dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="text_title">24sp</dimen>
+    <dimen name="text_body">16sp</dimen>
+    <dimen name="title_margin">20dp</dimen>
+    <dimen name="title_size">28sp</dimen>
+    <dimen name="field_height">56dp</dimen>
+    <dimen name="card_radius_large">20dp</dimen>
+    <dimen name="card_inner_padding">14dp</dimen>
+    <dimen name="stroke_width">1dp</dimen>
+    <dimen name="image_size">96dp</dimen>
+    <dimen name="spacing_xsmall">4dp</dimen>
+    <dimen name="chip_padding_horizontal">10dp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="text_subtitle">18sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="button_min_height">40dp</dimen>
+</resources>
