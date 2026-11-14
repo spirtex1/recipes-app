@@ -22,9 +22,14 @@ class AddRecipeActivity : AppCompatActivity() {
         const val EXTRA_TIME = "extra_time"
         const val EXTRA_DESCRIPTION = "extra_description"
         const val EXTRA_IMAGE = "extra_image"
+
+        // Ключи для сохранения состояния при повороте экрана
+        private const val KEY_IMAGE_PATH = "state_image_path"
+        private const val KEY_CATEGORY_POS = "state_category_pos"
     }
 
     private lateinit var dbHelper: DBHelper
+    private lateinit var categorySpinner: Spinner
     // Категории в том же порядке, что и в Spinner: (id, название)
     private var categories: List<Pair<Long, String>> = emptyList()
     // Путь к фото: старое при редактировании или только что выбранное
@@ -56,7 +61,7 @@ class AddRecipeActivity : AppCompatActivity() {
         val titleInput = findViewById<EditText>(R.id.recipeTitleInput)
         val timeInput = findViewById<EditText>(R.id.cookTimeInput)
         val descriptionInput = findViewById<EditText>(R.id.descriptionInput)
-        val spinner = findViewById<Spinner>(R.id.categorySpinner)
+        categorySpinner = findViewById(R.id.categorySpinner)
         val saveButton = findViewById<Button>(R.id.saveRecipeButton)
         val pickPhotoButton = findViewById<Button>(R.id.pickPhotoButton)
 
@@ -67,17 +72,21 @@ class AddRecipeActivity : AppCompatActivity() {
         val editing = recipeId != -1L
         val initialCategory = intent.getStringExtra(EXTRA_CATEGORY).orEmpty()
 
-        // В режиме правки заполняем поля и показываем текущее фото
-        if (editing) {
+        // Первый запуск: заполняем из Intent. После поворота берём фото из сохранённого состояния,
+        // а текст в EditText Android восстанавливает сам.
+        if (savedInstanceState != null) {
+            imagePath = savedInstanceState.getString(KEY_IMAGE_PATH)
+        } else if (editing) {
             titleInput.setText(intent.getStringExtra(EXTRA_TITLE).orEmpty())
             val time = intent.getIntExtra(EXTRA_TIME, 0)
             if (time > 0) timeInput.setText(time.toString())
             descriptionInput.setText(intent.getStringExtra(EXTRA_DESCRIPTION).orEmpty())
             imagePath = intent.getStringExtra(EXTRA_IMAGE)
-            imagePath?.let { showPreview(it) }
         }
+        // Превью показываем, если фото уже есть
+        imagePath?.let { showPreview(it) }
 
-        // Категории в фоне, затем заполняем Spinner
+        // Категории в фоне, затем заполняем Spinner и возвращаем выбор
         Thread {
             categories = dbHelper.getCategories()
             runOnUiThread {
@@ -87,10 +96,16 @@ class AddRecipeActivity : AppCompatActivity() {
                     categories.map { it.second }
                 )
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = adapter
-                if (editing) {
+                categorySpinner.adapter = adapter
+
+                val savedPos = savedInstanceState?.getInt(KEY_CATEGORY_POS, -1) ?: -1
+                if (savedPos >= 0) {
+                    // Поворот экрана: возвращаем ту категорию, которую выбрал пользователь
+                    categorySpinner.setSelection(savedPos)
+                } else if (editing) {
+                    // Правка: ставим категорию рецепта
                     val index = categories.indexOfFirst { it.second == initialCategory }
-                    if (index >= 0) spinner.setSelection(index)
+                    if (index >= 0) categorySpinner.setSelection(index)
                 }
             }
         }.start()
@@ -118,8 +133,13 @@ class AddRecipeActivity : AppCompatActivity() {
                 Toast.makeText(this, "Категории ещё не загружены", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val position = categorySpinner.selectedItemPosition
+            if (position < 0 || position >= categories.size) {
+                Toast.makeText(this, "Выберите категорию", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            val categoryId = categories[spinner.selectedItemPosition].first
+            val categoryId = categories[position].first
             val photo = imagePath
 
             // Запись в базу в фоне: обновляем рецепт или добавляем новый
@@ -140,6 +160,13 @@ class AddRecipeActivity : AppCompatActivity() {
                 }
             }.start()
         }
+    }
+
+    // Сохраняем фото и выбранную категорию, чтобы пережить поворот экрана
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_IMAGE_PATH, imagePath)
+        outState.putInt(KEY_CATEGORY_POS, categorySpinner.selectedItemPosition)
     }
 
     // Показываем фото в превью. Декодируем здесь, файл маленький, после сжатия.
