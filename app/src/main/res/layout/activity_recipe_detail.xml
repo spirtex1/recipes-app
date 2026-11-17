@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Экран деталей: большое фото, название, категория, время, описание и кнопки -->
+<!-- Экран деталей: фото, оценка, избранное, описание, комментарии и рекомендации -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -42,7 +43,47 @@
             android:layout_marginTop="@dimen/spacing_xsmall"
             android:textSize="@dimen/text_body" />
 
-        <!-- Описание: ингредиенты и шаги -->
+        <TextView
+            android:id="@+id/detailAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xsmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="@dimen/text_small" />
+
+        <!-- Оценка: звёзды и средний балл -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="1" />
+
+            <TextView
+                android:id="@+id/ratingSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_small"
+                android:textSize="@dimen/text_small" />
+        </LinearLayout>
+
+        <!-- Избранное -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/favoriteButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:minHeight="@dimen/button_min_height_sm"
+            app:cornerRadius="@dimen/card_corner_radius" />
+
         <TextView
             android:id="@+id/detailDescription"
             android:layout_width="match_parent"
@@ -65,6 +106,64 @@
             android:layout_marginTop="@dimen/spacing_small"
             android:minHeight="@dimen/button_min_height"
             android:text="@string/back" />
+
+        <!-- Комментарии -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:text="@string/comments_title"
+            android:textSize="@dimen/text_subtitle"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/commentsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:orientation="vertical" />
+
+        <EditText
+            android:id="@+id/commentInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:hint="@string/comment_hint"
+            android:inputType="textMultiLine"
+            android:autofillHints="none" />
+
+        <Button
+            android:id="@+id/sendCommentButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:minHeight="@dimen/button_min_height"
+            android:text="@string/send_comment" />
+
+        <!-- Рекомендации: случайные рецепты из каталога -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:text="@string/recommend_title"
+            android:textSize="@dimen/text_subtitle"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/refreshRecommendButton"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xsmall"
+            android:minHeight="@dimen/button_min_height_sm"
+            android:text="@string/recommend_refresh" />
+
+        <LinearLayout
+            android:id="@+id/recommendContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:orientation="vertical" />
 
     </LinearLayout>
 </ScrollView>

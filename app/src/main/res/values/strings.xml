@@ -104,4 +104,24 @@
     <string name="date_clear">Сбросить</string>
     <string name="date_picker_title">Выберите период</string>
     <string name="date_range_format">%1$s – %2$s</string>
+    <!-- Экран деталей: оценки, избранное, комментарии, рекомендации -->
+    <string name="author_label">Автор: %1$s</string>
+    <string name="minutes_format">%1$d мин</string>
+    <string name="rating_none">Оценок пока нет</string>
+    <string name="rating_summary">Средняя оценка: %1$.1f (оценок: %2$d)</string>
+    <string name="rating_saved">Оценка сохранена</string>
+    <string name="favorite_add">В избранное</string>
+    <string name="favorite_remove">В избранном</string>
+    <string name="comments_title">Комментарии</string>
+    <string name="comment_hint">Напишите комментарий</string>
+    <string name="send_comment">Отправить</string>
+    <string name="no_comments">Комментариев пока нет</string>
+    <string name="comment_format">%1$s: %2$s</string>
+    <string name="err_comment_empty">Введите комментарий</string>
+    <string name="comment_deleted">Комментарий удалён</string>
+    <string name="delete_comment_title">Удалить комментарий?</string>
+    <string name="action_delete">Удалить</string>
+    <string name="recommend_title">Вам может понравиться</string>
+    <string name="recommend_refresh">Обновить подборку</string>
+    <string name="recipe_not_found">Рецепт не найден</string>
 </resources>
