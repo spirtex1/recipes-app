@@ -135,4 +135,7 @@
     <string name="action_save">Сохранить</string>
     <string name="theme_light">Светлая тема</string>
     <string name="theme_dark">Тёмная тема</string>
+    <!-- Экран входа -->
+    <string name="err_password_empty">Введите пароль</string>
+    <string name="err_login_wrong">Неверный логин или пароль</string>
 </resources>

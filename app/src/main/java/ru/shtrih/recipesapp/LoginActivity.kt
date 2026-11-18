@@ -38,11 +38,13 @@ class LoginActivity : AppCompatActivity() {
             Thread {
                 val userId = dbHelper.getUserId(login, password)
                 runOnUiThread {
+                    // Если экран уже закрыт, ничего не делаем
+                    if (isFinishing) return@runOnUiThread
                     if (userId != -1L) {
                         Session.saveUser(this, userId)
                         openMain()
                     } else {
-                        Toast.makeText(this, "Неверный логин или пароль", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.err_login_wrong, Toast.LENGTH_SHORT).show()
                     }
                 }
             }.start()
@@ -56,11 +58,11 @@ class LoginActivity : AppCompatActivity() {
     // Проверка пустых полей через setError, как в TC-02
     private fun validate(loginInput: EditText, passwordInput: EditText): Boolean {
         if (loginInput.text.toString().trim().isEmpty()) {
-            loginInput.error = "Введите логин"
+            loginInput.error = getString(R.string.err_login_empty)
             return false
         }
         if (passwordInput.text.toString().trim().isEmpty()) {
-            passwordInput.error = "Введите пароль"
+            passwordInput.error = getString(R.string.err_password_empty)
             return false
         }
         return true
