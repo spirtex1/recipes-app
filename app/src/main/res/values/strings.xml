@@ -124,4 +124,15 @@
     <string name="recommend_title">Вам может понравиться</string>
     <string name="recommend_refresh">Обновить подборку</string>
     <string name="recipe_not_found">Рецепт не найден</string>
+    <!-- Смена пароля и тема в профиле -->
+    <string name="change_password">Сменить пароль</string>
+    <string name="change_password_title">Смена пароля</string>
+    <string name="password_old">Текущий пароль</string>
+    <string name="password_new">Новый пароль</string>
+    <string name="password_changed">Пароль изменён</string>
+    <string name="err_password_wrong">Неверный текущий пароль</string>
+    <string name="err_password_same">Новый пароль совпадает со старым</string>
+    <string name="action_save">Сохранить</string>
+    <string name="theme_light">Светлая тема</string>
+    <string name="theme_dark">Тёмная тема</string>
 </resources>

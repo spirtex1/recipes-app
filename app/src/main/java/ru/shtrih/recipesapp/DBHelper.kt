@@ -696,6 +696,16 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             arrayOf(userId.toString())
         ) > 0
     }
+    // Меняем пароль, только если старый совпадает. Возвращаем true при успехе.
+    fun changePassword(userId: Long, oldPassword: String, newPassword: String): Boolean {
+        val values = ContentValues().apply { put(COL_USER_PASSWORD, newPassword) }
+        return writableDatabase.update(
+            TABLE_USERS,
+            values,
+            "$COL_USER_ID = ? AND $COL_USER_PASSWORD = ?",
+            arrayOf(userId.toString(), oldPassword)
+        ) > 0
+    }
 
     // Удаляем пользователя вместе с его рецептами в одной транзакции.
     fun deleteUser(userId: Long): Boolean {
